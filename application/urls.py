@@ -30,7 +30,7 @@ urlpatterns = [
     path('user/register/',views.register,name='register'),
 
     ## Advisor post
-    path('adminn/advisor/', views.AdvisorPostList, name='Add-Advisor'),
+    path('admin1/advisor/', views.AdvisorPostList, name='Add-Advisor'),
     ## Get Advisor
     path('user/<user>/advisor', views.AdvisorGetList, name='Get-Advisor'),
 

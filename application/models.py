@@ -61,7 +61,7 @@ class User(AbstractUser):
 class Advisor(models.Model):
     Advisor_id = models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')
     Advisor_Name = models.CharField(max_length=30, blank=False)
-    PhotoUrl = models.CharField(max_length=499, blank=True)
+    Advisor_Photo_Url = models.CharField(max_length=499, blank=False)
 
 class bookacall(models.Model):
     Booking_id = models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')

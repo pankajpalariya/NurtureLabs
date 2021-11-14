@@ -1,3 +1,4 @@
+import re
 from django.http import response
 from requests.api import request
 from django.http import HttpResponse
@@ -95,11 +96,37 @@ class ObtainAuthToken(APIView):
         return self.serializer_class(*args, **kwargs)
 
     def post(self, request, *args, **kwargs):
-        serializer = self.get_serializer(data=request.data)
-        serializer.is_valid(raise_exception=True)
-        user = serializer.validated_data['user']
-        token, created = Token.objects.get_or_create(user=user)
-        return Response({'JWT Authentication Token': token.key, 'User id': token.user_id}, status=status.HTTP_200_OK)
+        email = request.data.get('email')
+        password = request.data.get('password')
+        print(email)
+        print(password)
+        if (not email) or (not email[0]):
+                return Response("Email is missing.", status=status.HTTP_400_BAD_REQUEST)
+        elif (not password) or (not password[0]):
+                return Response("Password is missing.", status=status.HTTP_400_BAD_REQUEST)
+        # password = make_password(password)
+        # try:
+        # print(User.objects.filter(email=email))
+        # if User.objects.filter(email=email).exists():
+        #     print("in")
+        else:
+        #     return Response(status=status.HTTP_400_BAD_REQUEST)
+            try:
+                serializer = self.get_serializer(data=request.data)
+                # print(serializer)
+                # print("...", request.data)
+                password = request.data['password']
+                serializer.is_valid(raise_exception=True)
+                user = serializer.validated_data['user']
+                token, created = Token.objects.get_or_create(user=user)
+                return Response({'JWT Authentication Token': token.key, 'User id': token.user_id}, status=status.HTTP_200_OK)
+            except:
+                return Response({'Error': "Email and Password Combination is Wrong"}, status.HTTP_401_UNAUTHORIZED)
+        # else:
+        #     return Response("Above fields are missing.",status=status.HTTP_400_BAD_REQUEST)
+        # except Exception as error:
+        #         return Response({'error': error}, status.HTTP_500_INTERNAL_SERVER_ERROR)
+        
 
 
 obtain_token = ObtainAuthToken.as_view()
@@ -115,9 +142,21 @@ def index(request):
 # @renderer_classes((JSONRenderer))
 def register(request):
     form = UserRegisterForm(request.POST)
+    print("asdflksaajfls", form.data)
+    email = form.data.get('email')
+    print(email)
+    password = form.data.get('password')
+    name = form.data.get('name')
+    if (not email) or (not email[0]):
+        print("lol")
+        return JsonResponse({'email': 'field is missing.'}, status=status.HTTP_400_BAD_REQUEST)
+    elif (not name) or (not name[0]):
+        return JsonResponse({'name': 'field is missing.'}, status=status.HTTP_400_BAD_REQUEST)
+    elif (not password) or (not password[0]):
+        return JsonResponse({'password': 'field is missing.'}, status=status.HTTP_400_BAD_REQUEST)
     # print(request.POST)
     # print(form)
-    if form.is_valid():
+    elif form.is_valid():
         form.save()
         sign_up = form.save(commit = False)
         sign_up.password = make_password(form.cleaned_data['password'])
@@ -164,7 +203,12 @@ def AdvisorPostList(request):
 @api_view(["POST"])
 def BookacallList(request, user, Advisor_id):
     if request.method == "POST":
-        serializer = bookacallSerializers(data=request.data)
+        data = request.data
+        data['user'] = user
+        data['Advisor_id'] = Advisor_id
+        serializer = bookacallSerializers(data=data)
+        print(".......", serializer)
+        print("... ", type(request.data))
         if serializer.is_valid():
             serializer.save()
             return Response(status=status.HTTP_200_OK)
@@ -184,12 +228,12 @@ def callGetList(request, user):
         # dd = dataJson.data[:]
         data = []
         for i in data1Json.data:
-            already_added = False
+            # already_added = False
             for j in dataJson.data:
                 if i['Advisor_id']==j['Advisor_id']:
                     data.append({**i, **j})
-                    already_added = True
-            if not already_added:
-                data.append(i)
+                    # already_added = True
+            # if not already_added:
+                # data.append(i)
         return Response(data, status=status.HTTP_200_OK)
     

@@ -23,7 +23,7 @@ from application .views import *
 from rest_framework.authtoken import views
 
 urlpatterns = [
-    path('admin/', admin.site.urls),
+    path('admin/', admin.site.urls),# user '/' if it gives error to fatch the path
     path('', include('application.urls')),
 
     # ### login api #### if needed for getting token ######

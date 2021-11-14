@@ -32,7 +32,7 @@ class advisorgetSerializers(serializers.ModelSerializer):
     
     class Meta:
         model = Advisor
-        fields = ['Advisor_Name', 'PhotoUrl', 'Advisor_id',]
+        fields = ['Advisor_Name', 'Advisor_Photo_Url', 'Advisor_id',]
 
 
 # class bothSerializers(serializers.Serializer):
